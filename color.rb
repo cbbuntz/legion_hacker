@@ -55,11 +55,14 @@ RGB = Struct.new(:r,:g,:b) do
       print(0)
     end
   end
-  #  def inspect
-  #  "%06X" % self.to_hex
-  #  end
+  
+  def inspect
+  "%06X" % self.to_hex
+  end
 end
 
+#  TODO: test these methods and put them 
+#  somewhere appropriate if working
 def print_rgb(fg, bg)
   fg && (print RGB.new(fg).print(0))
   bg && (print RGB.new(bg).print(1))

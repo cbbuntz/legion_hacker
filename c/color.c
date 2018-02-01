@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <custom/print.h>
 #include "color.h"
+#include "util.h"
 
 inline int
 truecolor_print(Truecolor c) {
@@ -15,10 +16,11 @@ inline int
 truecolor_str(char* s, Truecolor c) {
     return sprintf(s, truecolor_fmt, UNPACK_COLOR(c));
 }
-
+ 
+// hsv2rgb(float h, float s, float v, uint32_t fg_bg){
 inline Truecolor
-hsv2rgb(float h, float s, float v, uint32_t fg_bg){
-    float tmp = h / 120.;
+hsv2rgb(HSV hsv, uint32_t fg_bg){
+    float tmp = hsv[H] / 120.;
     
     float whole = floor(tmp);
     float frac = tmp - whole;
@@ -26,14 +28,14 @@ hsv2rgb(float h, float s, float v, uint32_t fg_bg){
     float a[3] = {1. - frac, frac, 0.};
     
     for (int i = 0; i < 3; i++) {
-        // min(2x, 1) 
+        /* min(2x, 1) */
         a[i] = ldexp(a[i], 1);
         a[i] = fmin(a[i], 1.);
         
-        a[i] = v * ((1. - s) + s * a[i]);
+        a[i] = hsv[V] * ((1. - hsv[S]) + hsv[S] * a[i]);
     }
     
-    // set flag
+    /* set flag */
     Truecolor rgb = fg_bg << 24;
     
     for (int i = 0; i < 3; i++) {
@@ -45,80 +47,50 @@ hsv2rgb(float h, float s, float v, uint32_t fg_bg){
     return rgb;
 }
 
-#define AUTO_FORMAT(X) _Generic((X)       , \
-uint8_t:          "%u"   ,\
-uint16_t:         "%u"   ,\
-uint32_t:         "%u"   ,\
-uint64_t:         "%u"   ,\
-int8_t:           "%i"   ,\
-int16_t:          "%i"   ,\
-int32_t:          "%i"   ,\
-int64_t:          "%i"   ,\
-float:            "%g"   ,\
-double:           "%lg"  ,\
-char*:            "%s"   ,\
-void*:            "%p"   ,\
-default:          "(unknown type)"\
-)
-#define PRINT_LABEL(X) printf("%s: ", #X)
-#define WATCH(X) PRINT_LABEL(X);\
-    printf(AUTO_FORMAT((X)), (X));\
-    putchar('\n');
+#define BLEND(A,B,C) ((A) - (C) * ((A) - (B)))
 
-// printf("%s: %i\n", val);
-inline float
-blend_float(float a, float b, float c){
-    return a - c * (a - b);
-}
-float c = 0.5
-HSV blend(HSV a, HSV b, float c){
-    HSV result;
-    for (int k = 0; k < 3; k++) 
-        result[k] = blend_float(a[k], b[k], c);
+inline Truecolor 
+blend_hsv(HSV a, HSV b, float c){
+    HSV tmp;
+    for (int i = 0; i < 3; i++)
+        tmp[i] = BLEND(a[i], b[i], c);
     
+    Truecolor result;
+    result = hsv2rgb(tmp, 0);
     return result;
 }
 
-enum HSV_ENUM{hue, sat, val, H = 0, S = 1, V = 2};
-int main(int argc, char *argv[]){
-    for (int i = -6; i < 36; i++){
-        Truecolor color = hsv2rgb(12*i, 1, 1, 1);
-        truecolor_print(color);
-        printf("X");
-          
-    }
+int
+main(int argc, char *argv[]){
+    
+    float hue, sat, val;
+    
+    for (val = 0.; val < 1.; val += 0.1) {
+        for (float hue = 0.; hue < 360.; hue += 6.) {
+            HSV hsv = {hue, 1., val};
+            Truecolor c = hsv2rgb(hsv,1);
+            truecolor_print(c);
+            printf(" ");
+        }
+        printf("\e[0m\n");
+    }        
+    for (sat = 0.9; sat >= 0.; sat -= 0.1) {
+        for (hue = 0.; hue < 360.; hue += 6.) {
+            HSV hsv = {hue, sat, val};
+            Truecolor c = hsv2rgb(hsv,1);
+            truecolor_print(c);
+            printf(" ");
+        }
+        printf("\e[0m\n");
+    }        
     
     putchar('\n');
     puts("\e[0m");
     
-    hsv new_color = {60, 1, 1};
-
-    WATCH(new_color[H]);
-    WATCH(new_color[S]);
-    WATCH(new_color[V]);
-    
-    uint32_t color = 0x00F3f201;
+    uint32_t color = 0x00F3F201;
     truecolor_print(color);
     print("hello there");
-    int32_t x = -5;
-    // x = x & (1 << 31);
     
-    printf("%u\n\%i",x,x);
     return 0;
 }
-
-
-/*int grayscale(unsigned char i, int layer) {*/
-  /*return printf(ColorFormat256[layer], i + 232);*/
-/*} // 0 <= i < 24*/
-
-/*int rgb(unsigned char* c, int layer) {*/
-  /*return printf(ColorFormat256[layer], 16 + (c[0] * 36) + (c[1] * 6) + c[2]);*/
-/*} // 0 <= r,g,b <= 5*/
-
-/*void _rgb(unsigned char* c) {*/
-    /*printf("\e[38;5;%um", */
-    /*(16 + (c[0] * 36) + (c[1] * 6) + c[2])*/
-    /*);*/
-    
 

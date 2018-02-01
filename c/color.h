@@ -9,22 +9,21 @@
 
 // 0000000L RRRRRRRR GGGGGGGG BBBBBBBB
 typedef uint32_t Truecolor;
-typedef float hsv[3];
+#define BG_MASK(X) (X) | 0x01000000
+#define FG_MASK(X) (X) & 0xFEFFFFFF
 
-typedef struct _HSV{
-    float h;
-    float s;
-    float v;
-}HSV;
+typedef float HSV[3];
+
+enum HSV_ENUM{hue, sat, val, H = 0, S = 1, V = 2};
 
 char color256_fmt[] = "\e[%u8;5;%um";
 
 char truecolor_fmt[] = "\e[%c8;2;%u;%u;%um";
 int truecolor_print(Truecolor c);
 int truecolor_str(char* s, Truecolor c);
-    
-Truecolor hsv2rgb(float h, float s, float v, uint32_t fg_bg);
+
+Truecolor hsv2rgb(HSV, uint32_t);
 // int hsv_print(char* s, Truecolor c);
-float blend_float(float, float, float);
+Truecolor blend_hsv(HSV, HSV, float);
 
 

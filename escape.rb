@@ -7,11 +7,11 @@ module EscSequence
         green:	    [32,	42],
         yellow:	    [33,	43],
         blue:	    [34,	44],
-        magenta:	[35,	45],
+        magenta:    [35,	45],
         cyan:	    [36,	46],
         white:      [37,    47],
     }
-    
+
     ANSI_COLOR = @ansi_color
     
     @ansi_color_index = @ansi_color.each_value.to_a
@@ -89,7 +89,6 @@ module EscSequence
     end
 
     #  Matching method names so that format can send method
-      
     #  expects arguments (int, int int), where each 0 < x <= 5
     def EscSequence.rgb256 *v
         (@color_format[:rgb256][0,v.length]*'') % EscSequence.process_rgb256(*v)
@@ -116,10 +115,6 @@ module EscSequence
         @color_format[:rgb256_bg] % ((v.to_i % 24) + 232)
     end
     
-    #  int grayscale(unsigned char i, int layer) {
-    #  return printf(ColorFormat256[layer], i + 232);
-    
-
     def EscSequence.hex_to_rgb(v)
         b = (v & 0x0000ff)
         g = (v & 0x00ff00) >> 8
@@ -268,21 +263,10 @@ module EscSequence
         '1':        1,
         '2':        2
     }
+
     def EscSequence.cursor_shape v
         "\e]50;CursorShape=#{EscSequence::CURSOR_SHAPE[v.to_s.to_sym]}\C-G"
     end
     
 end
-
-    #  didnt't work for me
-    #  "\e[?#{shape}c"
-    #  CURSOR_SHAPE = {
-        #  default:     0,   
-        #  invisible:   1,     
-        #  underscore:  2,      
-        #  lower_third: 3,       
-        #  lower_half:  4,      
-        #  two_thirds:  5,      
-        #  block:       6, 
-    #  }
 
