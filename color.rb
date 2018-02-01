@@ -50,7 +50,7 @@ RGB = Struct.new(:r,:g,:b) do
   def print(*v)
     if v[0]
       layer = [38, 48][v[0]]
-      "\033[#{layer};2;" + colorcode + 'm'
+      "\e[#{layer};2;" + colorcode + 'm'
     else
       print(0)
     end
@@ -89,19 +89,19 @@ end
 
 
 def format_color *v,fg_bg
-    "\033[#{[38,48][fg_bg]};2;#{v*';'}m"
+    "\e[#{[38,48][fg_bg]};2;#{v*';'}m"
 end
 
 def format_color_hsv h,s,v,fg_bg=0
-    "\033[#{[38,48][fg_bg]};2;#{hsv2rgb(h,s,v).map(&:round)*';'}m"
+    "\e[#{[38,48][fg_bg]};2;#{hsv2rgb(h,s,v).map(&:round)*';'}m"
 end
 
 def printc(*v)
-    print "\033[38;2;#{v*';'}m"
+    print "\e[38;2;#{v*';'}m"
 end
 
 def printc2(fg,bg)
-    print "\033[38;2;#{fg*';'}m\033[48;2;#{bg*';'}m"
+    print "\e[38;2;#{fg*';'}m\e[48;2;#{bg*';'}m"
 end
 
 def blend a,b,coef
