@@ -62,10 +62,6 @@ class String
     def save_pos_post() self << "\e[s" end
     def restore_pos()   "\e[s" << self end
     
-    @color_alias = {
-        'grey': :grayscale, 'gray': :grayscale, 'greyscale': :grayscale,
-        'grayscale': :grayscale, '256': :rgb256
-    }
     def color type, *v
         EscSequence.send(type, *v) << self
     end
