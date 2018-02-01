@@ -89,7 +89,7 @@ module EscSequence
     end
 
     #  Matching method names so that format can send method
-    #  expects arguments (int, int int), where each 0 < x <= 5
+    #  rgb256 expects arguments (int, int int), where each 0 <= v <= 5
     def EscSequence.rgb256 *v
         (@color_format[:rgb256][0,v.length]*'') % EscSequence.process_rgb256(*v)
     end
