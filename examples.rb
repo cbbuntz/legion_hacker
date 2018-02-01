@@ -1,11 +1,13 @@
-require './string.rb'
+$LOAD_PATH << '.'
+require 'string.rb'
 
-def examples1
+@buffer = DATA.read.split(/\n/)
+def color_example
     print EscSequence.screen :new
     code_color = EscSequence.rgb256_fg(3,3,3)
     result_color = EscSequence.rgb256_fg(3,1,0)
     test_string = '* TEST STRING *'
-    DATA.each_line do |line|
+    @buffer.each do |line|
         break if line =~ /ex2/
         if line =~ /^[^#]/
             result = eval(line)
@@ -18,7 +20,7 @@ def examples1
     print EscSequence.screen :restore
 end
 
-def examples2
+def cursor_example
     c = [ [0x7799FF,0x000000], [0xFFFFFF],
           [0x33EE88], [0x66FF22], [0xFFFF77]
     ].map{|v| EscSequence.color(:truecolor, *v) }
@@ -54,11 +56,37 @@ def examples2
         print EscSequence.cursor :store
     end
     print EscSequence.screen :restore
-    sleep 2
 end
 
-examples1
-examples2
+        
+
+def scroll_example
+    print EscSequence.screen :new
+    print @buffer.join("\n").style :reset
+    
+    line_nr = 0
+    sleep 0.5
+    10.times { 
+        line_nr += 1
+        print EscSequence.screen :scroll_down 
+        sleep 0.125
+    }
+    10.times { 
+        print EscSequence.screen :scroll_up 
+        line_nr -= 1
+        print @buffer[line_nr].at_line(0)
+        print EscSequence.cursor :cr
+        sleep 0.125
+    }
+
+    sleep 1
+    print EscSequence.screen :restore
+
+end
+
+color_example
+cursor_example
+scroll_example
 
 __END__
 "This is rgb256".color(:rgb256, [5,5,5], [0,1,3])

@@ -1,4 +1,5 @@
-require './util.rb'
+$LOAD_PATH << '.'
+require 'util.rb'
 
 module EscSequence
     @ansi_color = {
@@ -44,6 +45,7 @@ module EscSequence
         highlight: [7, 27],
         conceal:   [8, 28],
         hide:      [8, 28],
+        invisible: [8, 28],
         crossout:  [9, 29],
         strikeout: [9, 29]
     }
@@ -172,25 +174,37 @@ module EscSequence
     end
 
     SCREEN = {
-        store:       "\e[?1049h",
-        new:         "\e[?1049h\e[2J\e[H",
-        restore:     "\e[?1049l",
-        clear:       "\e[2J",
-        clear!:      "\e[2J\e[H",
-        reset:       "\e[2J\e[H",
-        scroll_up:   "\e[%US",
-        scroll_down: "\e[%UT",
-        STORE:       "\e[?1049h",
-        NEW:         "\e[?1049h\e[2J\e[H",
-        RESTORE:     "\e[?1049l",
-        CLEAR:       "\e[2J",
-        CLEAR!:      "\e[2J\e[H",
-        RESET:       "\e[2J\e[H",
-        SCROLL_UP:   "\e[%US",
-        SCROLL_DOWN: "\e[%UT"
+        store:         "\e[?1049h",
+        new:           "\e[?1049h\e[2J\e[H",
+        restore:       "\e[?1049l",
+        clear:         "\e[2J",
+        clear!:        "\e[2J\e[H",
+        reset:         "\e[2J\e[H",
+        scroll_up:     "\e[T",
+        scroll_down:   "\e[S",
+        scroll_dn:     "\e[S",
+        scroll_n_up:  "\e[%uT",
+        scroll_n_down: "\e[%uS",
+        scroll_n_dn:   "\e[%uS",
+        STORE:         "\e[?u049h",
+        NEW:           "\e[?1049h\e[2J\e[H",
+        RESTORE:       "\e[?1049l",
+        CLEAR:         "\e[2J",
+        CLEAR!:        "\e[2J\e[H",
+        RESET:         "\e[2J\e[H",
+        SCROLL_UP:     "\e[T",
+        SCROLL_DOWN:   "\e[S",
+        SCROLL_DN:     "\e[S",
+        SCROLL_N_UP:  "\e[%uT",
+        SCROLL_N_DOWN: "\e[%uS",
+        SCROLL_N_DN:   "\e[%uS",
     }
-    def EscSequence.screen cmd
-        EscSequence::SCREEN[cmd.to_sym]
+    def EscSequence.screen cmd, *v
+        if cmd =~ /scroll_n/i
+            EscSequence::SCREEN[cmd.to_sym] % v[0]
+        else
+            EscSequence::SCREEN[cmd.to_sym]
+        end
     end
 
     @cursor_format = {
@@ -209,7 +223,9 @@ module EscSequence
         store:    "\e[s",
         save:     "\e[s",
         restore:  "\e[u",
-        home:     "\e[H"
+        home:     "\e[H",
+        cr:       "\r",
+        CR:       "\r",
     }
 
     def EscSequence.cursor cmd, *v
@@ -231,8 +247,6 @@ module EscSequence
     
     def EscSequence.save_pos()    @cursor_format[:store] end
     def EscSequence.store_pos()   @cursor_format[:store] end
-    def EscSequence.restore_pos() @cursor_format[:restore] end
-    
     def EscSequence.restore_pos() @cursor_format[:restore] end
     
     def EscSequence.kill
