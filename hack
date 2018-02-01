@@ -11,7 +11,7 @@ $columns = termcap.gsub(/.*?(columns)\s*(\d+).*/m,'\\2').to_i
 $center_line = $lines / 2
 $center_column = $columns / 2
 
-@alienlang = File.read('./text/chars').gsub(/\s\r\n/,'').chars
+@alienlang = File.read('./text/chars').gsub(/\s/m,'').chars
 
 @red = "\e[38;5;196;48;5;16m"
 @redbg = "\e[38;5;231;48;5;196m"
