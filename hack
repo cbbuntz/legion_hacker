@@ -92,9 +92,9 @@ end
 system('clear')
 print "\e[38;5;46m"
 #  banner =  `figlet -f big -t "LEGION  HACKER"` + "\n\n\n\n\n"
-banner =  `cat ./text/banner` + "\n\n\n\n\n"
+banner =  File.read('./text/banner') + "\n" * 5
 #  cia_banner =  `figlet -f big -t "  C I A  "` + "\n\n\n\n\n"
-cia_banner =  `cat ./text/CIA` + "\n\n\n\n\n"
+cia_banner =  File.read('./text/CIA') + "\n" * 5
 
 print banner
 
