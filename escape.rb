@@ -2,7 +2,7 @@ $LOAD_PATH << '.'
 require 'util.rb'
 
 module EscSequence
-    @ansi_color = {
+    ANSI_COLOR = {
         black:   [30, 40],
         red:     [31, 41],
         green:   [32, 42],
@@ -13,18 +13,16 @@ module EscSequence
         white:   [37, 47],
     }
 
-    ANSI_COLOR = @ansi_color
-    
-    @ansi_color_index = @ansi_color.each_value.to_a
+    @ansi_color_index = EscSequence::ANSI_COLOR.each_value.to_a
 
     def EscSequence.get_ansi_color *v
         #  Numeric for compatibility with ruby < 2.4
         if v[0].is_a? Numeric
             ret = @ansi_color_index[v[0].to_i]
         elsif v[0].is_a? Symbol
-            ret =@ansi_color[v[0]]
+            ret =EscSequence::ANSI_COLOR[v[0]]
         elsif v[0].is_a? String
-            ret = @ansi_color[v[0].to_sym]
+            ret = EscSequence::ANSI_COLOR[v[0].to_sym]
         end
         if v[1]
             return ret[v[1]]
@@ -33,7 +31,7 @@ module EscSequence
         end
     end
     
-    @style = {
+    EscSequence::STYLE = {
         reset:     [0, 0],
         bold:      [1, 21],
         italic:    [3, 23],
@@ -50,13 +48,10 @@ module EscSequence
         strikeout: [9, 29]
     }
     
-    STYLE = @style
-
-    @ansi = @style.merge(@ansi_color)
-    ANSI = @ansi
+    ANSI = EscSequence::STYLE.merge(EscSequence::ANSI_COLOR)
 
     def EscSequence.style *v
-        styles = v.map{|i| @EscSequence::STYLE[i.to_sym]}.transpose
+        styles = v.map{|i| EscSequence::STYLE[i.to_sym]}.transpose
         [
             "\e[" << styles[0].join(';') << "m",
             "\e[" << styles[1].join(';') << "m"
