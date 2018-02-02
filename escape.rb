@@ -123,7 +123,11 @@ module EscSequence
         r = (v & 0xff0000) >> 16
         [r, g, b]
     end
-
+    
+    def hex_to_rgb v
+        EscSequence.hex_to_rgb v
+    end
+    
     def EscSequence.process_truecolor *v
         if v[0].is_a? Array
             v.map {|x| x.map(&:to_i) }
@@ -170,9 +174,44 @@ module EscSequence
     end   
     
     def EscSequence.color type, *v
-        v = EscSequence.send(type, *v)
+        EscSequence.send(type, *v)
     end
 
+    def truecolor(*v)     EscSequence.truecolor(v)    end
+    def truecolor_fg(*v)  EscSequence.truecolor_fg(v) end
+    def truecolor_bg(*v)  EscSequence.truecolor_bg(v) end
+    def ansi_color(*v)    EscSequence.ansi(v)         end
+    def ansi_color_fg(*v) EscSequence.ansi_fg(v)      end
+    def ansi_color_bg(*v) EscSequence.ansi_bg(v)      end
+    def rgb256(*v)        EscSequence.rgb256(*v)      end
+    def rgb256_fg(*v)     EscSequence.rgb256_fg(*v)   end
+    def rgb256_bg(*v)     EscSequence.rgb256_bg(*v)   end
+    def grayscale(*v)     EscSequence.grayscale(v)    end
+    def grayscale_fg(*v)  EscSequence.grayscale_fg(v) end
+    def grayscale_bg(*v)  EscSequence.grayscale_bg(v) end
+
+    alias truecolour     truecolor
+    alias truecolour_fg  truecolor_fg
+    alias truecolour_bg  truecolor_bg
+    alias ansi_colour    ansi_color
+    alias ansi_colour_fg ansi_color_fg
+    alias ansi_colour_bg ansi_color_bg
+    alias greyscale      grayscale     
+    alias greyscale_fg   grayscale_fg  
+    alias greyscale_bg   grayscale_bg  
+
+    def color type, *v
+        EscSequence.color(type, *v)
+    end
+
+    def console_color type, *v
+        print EscSequence.color(type, *v)
+    end
+    
+    def console_style_reset type, *v
+        print "\e[0m"
+    end
+    
     SCREEN = {
         store:         "\e[?1049h",
         new:           "\e[?1049h\e[2J\e[H",
@@ -207,6 +246,10 @@ module EscSequence
         end
     end
 
+    def screen cmd, *v
+        print EscSequence.screen(cmd, *v)
+    end
+    
     @cursor_format = {
         pos:      "\e[%u;%uH",
         line_col: "\e[%u;%uH",
@@ -231,13 +274,21 @@ module EscSequence
     def EscSequence.cursor cmd, *v
         @cursor_format[cmd.to_sym] % v.map(&:to_i)
     end
-    #  How to alias in module namespace?
+    
     def EscSequence.pos cmd, *v
         @cursor_format[cmd.to_sym] % v.map(&:to_i)
     end
     
     def EscSequence.cursor_pos *v
         @cursor_format[:line_col] % v.map(&:to_i)
+    end
+    
+    def cursor *v
+        print EscSequence.cursor(*v)
+    end
+    
+    def cursor_pos *v
+        print EscSequence.cursor_pos(*v)
     end
     
     def EscSequence.up(v = 1)    @cursor_format[:up]    % v.to_i end
@@ -252,18 +303,26 @@ module EscSequence
     def EscSequence.kill
         "\e[K"
     end   
-    def EscSequence.kill_line
-        "\r\e[K"
+    
+    def console_kill
+        print "\r\e[K"
     end   
-    def EscSequence.kill_lines a, b
+    
+    def console_kill_line
+        print "\r\e[K"
+    end   
+    
+    def console_kill_lines a, b
         a,b = [a,b].sort
-        (a..b).map{|line| "\e[#{line}H\r\e[K" }.join
+        print (a..b).map{|line| "\e[#{line}H\r\e[K" }.join
     end   
-    def EscSequence.delete_backward_char
-        "\b \b"
+    
+    def delete_backward_char
+        print "\b \b"
     end   
-    def EscSequence.delete_forward_char
-        " "
+    
+    def delete_forward_char
+        print " "
     end   
 
     CURSOR_SHAPE = {
@@ -282,5 +341,8 @@ module EscSequence
         "\e]50;CursorShape=#{EscSequence::CURSOR_SHAPE[v.to_s.to_sym]}\C-G"
     end
     
+    def set_cursor_shape v
+        print EscSequence.cursor_shape(v)
+    end
 end
 

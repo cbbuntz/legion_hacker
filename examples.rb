@@ -1,11 +1,12 @@
 $LOAD_PATH << '.'
 require 'string.rb'
+include EscSequence
 
 @buffer = DATA.read.split(/\n/)
 def color_example
-    print EscSequence.screen :new
-    code_color = EscSequence.rgb256_fg(3,3,3)
-    result_color = EscSequence.rgb256_fg(3,1,0)
+    screen :new
+    code_color = rgb256_fg(3,3,3)
+    result_color = rgb256_fg(3,1,0)
     test_string = '* TEST STRING *'
     @buffer.each do |line|
         break if line =~ /ex2/
@@ -17,21 +18,21 @@ def color_example
         end
     end
     sleep 5
-    print EscSequence.screen :restore
+    screen :restore
 end
 
 def cursor_example
     c = [ [0x7799FF,0x000000], [0xFFFFFF],
           [0x33EE88], [0x66FF22], [0xFFFF77]
-    ].map{|v| EscSequence.color(:truecolor, *v) }
+    ].map{|v| color :truecolor, *v }
 
-    print EscSequence.screen :new
+    screen :new
 
     kill = EscSequence.kill
     puts "#{kill}Examples 2".center(30).bold.color(:rgb256,[5,5,5],[0,1,3])
 
     print "\n".style :reset
-    EscSequence.cursor(:store)
+    cursor :store
 
     [
         ['line_col',4,3],
@@ -44,43 +45,46 @@ def cursor_example
         ['<',2],
 
     ].each do |argv|
-        print "  #{c[0]}#{kill}EscSequence#{c[1]}.pos(#{c[2]}#{argv*', '}#{c[1]}) << #{c[3]}\"X\"".at_pos(2,1)
+        print "  #{c[0]}#{kill}cursor#{c[1]}(#{c[2]}:#{argv*', '}#{c[1]})".at_pos(2,1)
         
-        print EscSequence.cursor :restore
+        cursor :restore
         print c[4]
         4.times {
-            print EscSequence.pos(*argv) << "X"
+            cursor(*argv)
+            print 'X'
             sleep 0.5
-            print EscSequence.delete_backward_char
+            delete_backward_char
         }
-        print EscSequence.cursor :store
+        cursor :store
     end
-    print EscSequence.screen :restore
+    screen :restore
 end
 
-        
 
 def scroll_example
-    print EscSequence.screen :new
+    screen :store
+    screen :reset
+
     print @buffer.join("\n").style :reset
     
     line_nr = 0
     sleep 0.5
     10.times { 
         line_nr += 1
-        print EscSequence.screen :scroll_down 
+        screen :scroll_down 
+        cursor :cr
         sleep 0.125
     }
     10.times { 
-        print EscSequence.screen :scroll_up 
+        screen :scroll_up 
         line_nr -= 1
         print @buffer[line_nr].at_line(0)
-        print EscSequence.cursor :cr
+        cursor :cr
         sleep 0.125
     }
 
     sleep 1
-    print EscSequence.screen :restore
+    screen :restore
 
 end
 
