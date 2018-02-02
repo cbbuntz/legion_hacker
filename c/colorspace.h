@@ -2,27 +2,21 @@
 #include <math.h>
 #include "color.h"
 
-#define BLEND(A, B, C) ((A)-(C)*((A)-(B)))
 
+void shuffle(float *a, int *key){
+    float b[3];
+    for (int i = 0; i < 3; i++) 
+        b[i] = a[key[i]];
 
-inline Truecolor
-blend_hsv(HSV a, HSV b, float c)
-{
-	HSV tmp;
+    for (int i = 0; i < 3; i++) 
+        a[i] = b[i];
 
-	for (int i = 0; i < 3; i++)
-		tmp[i] = BLEND(a[i], b[i], c);
-
-	Truecolor result;
-	result = hsv2rgb(tmp, 0);
-	return result;
 }
+
 
 inline Truecolor
 fhsv2rgb(float h, float s, float v, uint32_t fg_bg) {
-    // float tmp = h / 120.;
-    // should start at red. probably a mistake in the offset
-    float tmp = (600. - h) / 120.;
+    float tmp = h / 120.;
 
 	float whole = floor(tmp);
 	float frac = tmp - whole;
@@ -46,7 +40,7 @@ fhsv2rgb(float h, float s, float v, uint32_t fg_bg) {
 	for (int i = 0; i < 3; i++) {
 		rgb |= (
 			    (int)(a[i] * 255.f) & 0xFF) <<
-		    (8 * WRAP_MOD(whole + i, 3));
+		    (8 * WRAP_MOD((2 - whole - i), 3));
 	}
 	return rgb;
 }
@@ -72,14 +66,11 @@ hsv2rgb_bg(HSV hsv)
 { return fhsv2rgb(hsv[0], hsv[1], hsv[2], 1); }
 
 
-
 inline Truecolor
 fhsl2rgb(float h, float s, float l, uint32_t fg_bg) {
     float c = (1 - fabs(2 * l - 1)) * s;
 
-    // float hp = h / 60.;
-    // should start at red. probably a mistake in the offset
-    float hp = (600. - h) / 60.;
+    float hp = h / 60.;
     float hmod = fmod(hp, 2);
      
     float x = c * (1 - fabs(hmod - 1));
@@ -96,14 +87,15 @@ fhsl2rgb(float h, float s, float l, uint32_t fg_bg) {
 	a[2] = 0.;
 
     int offset = (int)floor(hp / 2.0f);
-    
+
+
 	/* set flag */
 	Truecolor rgb = fg_bg << 24;
 
 	for (int i = 0; i < 3; i++) {
 		rgb |= (
 			    (int)( (a[i] + m) * 255.f) & 0xFF) <<
-		    ( 8 * WRAP_MOD(offset + i, 3) );
+		    ( 8 * WRAP_MOD((2 - offset - i), 3) );
 	}
 	return rgb;
 }
@@ -128,4 +120,3 @@ inline Truecolor
 hsl2rgb_bg(HSL hsl)
 { return fhsl2rgb(hsl[0], hsl[1], hsl[2], 1); }
 
-#undef BLEND

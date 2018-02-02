@@ -42,6 +42,4 @@ Truecolor hsv2rgb_bg(HSV);
 
 Truecolor hsl2rgb_fg(HSL);
 Truecolor hsl2rgb_bg(HSL);
-// int hsv_print(char* s, Truecolor c);
-// 
-Truecolor blend_hsv(HSV, HSV, float);
+
