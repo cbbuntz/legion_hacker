@@ -64,23 +64,24 @@ fhsl2rgb(float h, float s, float l, uint32_t fg_bg) {
     
     float c = (1 - fabs(2 * l - 1)) * s;
 
-    float hp = h / 60.;
-    float hmod = fmod(hp, 2);
+    float hp = h / 120.;
+    // fhsv2rgb accepts negative hue without fmod.
+    // possibly simplify?
+    float hmod = 2 * fmod((fmod(hp, 1) + 1), 1);
      
     float x = c * (1 - fabs(hmod - 1));
     float m = l - 0.5 * c;
     
 	float a[3];
-	if (floor(hmod) < 1.) {
+	if (floor(hmod) < 1.0) {
 	    a[0] = c; a[1] = x;
-	    // a[0] = c; a[1] = x;
 	} else {
 	    a[0] = x; a[1] = c;
 	}
 	
 	a[2] = 0.;
 
-    int offset = (int)floor(hp / 2.0f);
+    int offset = (int)floor(hp);
 
 	/* set flag */
 	Truecolor rgb = fg_bg << 24;
