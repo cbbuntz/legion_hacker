@@ -3,28 +3,20 @@
 #include "color.h"
 
 
-void shuffle(float *a, int *key){
-    float b[3];
-    for (int i = 0; i < 3; i++) 
-        b[i] = a[key[i]];
-
-    for (int i = 0; i < 3; i++) 
-        a[i] = b[i];
-
-}
-
-
 inline Truecolor
 fhsv2rgb(float h, float s, float v, uint32_t fg_bg) {
+    s = fmax(0.f, fmin(s, 1.f));
+    v = fmax(0.f, fmin(v, 1.f)); 
+    
     float tmp = h / 120.;
 
 	float whole = floor(tmp);
 	float frac = tmp - whole;
 
 	float a[3];
-	a[H] = 1. - frac;
-	a[S] = frac;
-	a[V] = 0.;
+	a[0] = 1. - frac;
+	a[1] = frac;
+	a[2] = 0.;
 
 	for (int i = 0; i < 3; i++) {
 		/* min(2x, 1) */
@@ -65,9 +57,11 @@ inline Truecolor
 hsv2rgb_bg(HSV hsv)
 { return fhsv2rgb(hsv[0], hsv[1], hsv[2], 1); }
 
-
 inline Truecolor
 fhsl2rgb(float h, float s, float l, uint32_t fg_bg) {
+    s = fmax(0.f, fmin(s, 1.f));
+    l = fmax(0.f, fmin(l, 1.f));
+    
     float c = (1 - fabs(2 * l - 1)) * s;
 
     float hp = h / 60.;
@@ -87,7 +81,6 @@ fhsl2rgb(float h, float s, float l, uint32_t fg_bg) {
 	a[2] = 0.;
 
     int offset = (int)floor(hp / 2.0f);
-
 
 	/* set flag */
 	Truecolor rgb = fg_bg << 24;
