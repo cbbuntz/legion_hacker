@@ -5,55 +5,55 @@ RGB = Struct.new(:r,:g,:b) do
   attr_accessor :v
 
   def initialize(*v)
-    if v.length == 3
-      self.r, self.g, self.b = v.map(&:to_i)
-      @v = ((r % 256) << 16) + ((g % 256) << 8) + (b % 256)
-    elsif v.length == 1
-      @v = v[0]
-      hex_to_rgb(v[0])
-    elsif v.length.zero?
-      self.r, self.g, self.b, @v = [0] * 4
-    else
-      raise "RGB initialization takes 0, 1, or 3 argumnets. \
-            You gave #{v.length}"
-    end
+  if v.length == 3
+    self.r, self.g, self.b = v.map(&:to_i)
+    @v = ((r % 256) << 16) + ((g % 256) << 8) + (b % 256)
+  elsif v.length == 1
+    @v = v[0]
+    hex_to_rgb(v[0])
+  elsif v.length.zero?
+    self.r, self.g, self.b, @v = [0] * 4
+  else
+    raise "RGB initialization takes 0, 1, or 3 argumnets. \
+      You gave #{v.length}"
+  end
   end
 
   def hex_to_rgb(v)
-    
-    self.b = (v & 0x0000ff)
-    self.g = (v & 0x00ff00) >> 8
-    self.r = (v & 0xff0000) >> 16
-    [r, g, b]
+  
+  self.b = (v & 0x0000ff)
+  self.g = (v & 0x00ff00) >> 8
+  self.r = (v & 0xff0000) >> 16
+  [r, g, b]
   end
 
   def rgb_to_hex(r, g, b)
-    @v = ((r % 256) << 16) + ((g % 256) << 8) + (b % 256)
+  @v = ((r % 256) << 16) + ((g % 256) << 8) + (b % 256)
   end
 
   def to_hex
-    ((r % 256) << 16) + ((g % 256) << 8) + (b % 256)
+  ((r % 256) << 16) + ((g % 256) << 8) + (b % 256)
   end
 
   def v=(v)
-    RGB.new(v)
+  RGB.new(v)
   end
 
   def to_a
-    [r, g, b]
+  [r, g, b]
   end
 
   def colorcode
-    to_a.map { |i| ((i % 256)) } * ';'
+  to_a.map { |i| ((i % 256)) } * ';'
   end
 
   def print(*v)
-    if v[0]
-      layer = [38, 48][v[0]]
-      "\e[#{layer};2;" + colorcode + 'm'
-    else
-      print(0)
-    end
+  if v[0]
+    layer = [38, 48][v[0]]
+    "\e[#{layer};2;" + colorcode + 'm'
+  else
+    print(0)
+  end
   end
   
   def inspect
@@ -89,55 +89,55 @@ end
 
 
 def format_color *v,fg_bg
-    "\e[#{[38,48][fg_bg]};2;#{v*';'}m"
+  "\e[#{[38,48][fg_bg]};2;#{v*';'}m"
 end
 
 def format_color_hsv h,s,v,fg_bg=0
-    "\e[#{[38,48][fg_bg]};2;#{hsv2rgb(h,s,v).map(&:round)*';'}m"
+  "\e[#{[38,48][fg_bg]};2;#{hsv2rgb(h,s,v).map(&:round)*';'}m"
 end
 
 def printc(*v)
-    print "\e[38;2;#{v*';'}m"
+  print "\e[38;2;#{v*';'}m"
 end
 
 def printc2(fg,bg)
-    print "\e[38;2;#{fg*';'}m\e[48;2;#{bg*';'}m"
+  print "\e[38;2;#{fg*';'}m\e[48;2;#{bg*';'}m"
 end
 
 def blend a,b,coef
-    c = a.map.with_index {|v,i| 
-        (v * (1.0 - coef) + coef * b[i])
-    }
-    hsv2rgb(*c).map(&:round)
+  c = a.map.with_index {|v,i| 
+    (v * (1.0 - coef) + coef * b[i])
+  }
+  hsv2rgb(*c).map(&:round)
 end
 
 def fade msg, a, b, ms
-    steps = (60.0 * ms / 1000.0).round
-    scale =  1.0 / steps
-    (0..steps).each {|i|
-        c = blend(a,b,i*scale)
-        print "\e[u"
-        printc(*c)
-        print msg+"\r"
-        sleep scale
-    }
+  steps = (60.0 * ms / 1000.0).round
+  scale =  1.0 / steps
+  (0..steps).each {|i|
+    c = blend(a,b,i*scale)
+    print "\e[u"
+    printc(*c)
+    print msg+"\r"
+    sleep scale
+  }
 end
 
 def gradient a, b, s
-    scale = 1.0 / s.length
+  scale = 1.0 / s.length
 
-    s.chars.each.with_index {|v,i|
-        c = blend(a,b,i*scale)
-        printc(*c)
-        print v
-    }
+  s.chars.each.with_index {|v,i|
+    c = blend(a,b,i*scale)
+    printc(*c)
+    print v
+  }
 end
 
 def gradient_col a, b, s, col
     scale = 1.0 / s.length
-    s.chars.each.with_index {|v,i|
-        c = blend(a,b,i*scale)
-        printc(*c)
-        print print "\e[#{i};#{col}H#{v}"
-    }
+    s.chars.each.with_index { |v,i|
+        c = blend(a,b,i * scale)
+    printc(*c)
+    print print "\e[#{i};#{col}H#{v}"
+  }
 end
