@@ -90,8 +90,15 @@ end
 
 system('clear')
 print "\e[38;5;46m"
+<<<<<<< HEAD
 banner = `figlet -f big -t "LEGION  HACKER"` + "\n\n\n\n\n"
 cia_banner = `figlet -f big -t "  C I A  "` + "\n\n\n\n\n"
+=======
+#  banner =  `figlet -f big -t "LEGION  HACKER"` + "\n\n\n\n\n"
+banner =  File.read('./text/banner') + "\n" * 5
+#  cia_banner =  `figlet -f big -t "  C I A  "` + "\n\n\n\n\n"
+cia_banner =  File.read('./text/CIA') + "\n" * 5
+>>>>>>> origin/master
 
 print banner
 

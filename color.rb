@@ -15,7 +15,7 @@ RGB = Struct.new(:r, :g, :b) do
             self.r, self.g, self.b, @v = [0] * 4
         else
             raise "RGB initialization takes 0, 1, or 3 argumnets. \
-                  You gave #{v.length}"
+              You gave #{v.length}"
         end
     end
 
