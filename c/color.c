@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 #include "color.h"
+#include "colorspace.h"
 #include "util.h"
 
 inline int
@@ -18,81 +20,58 @@ truecolor_str(char *s, Truecolor c)
 	return sprintf(s, truecolor_fmt, UNPACK_COLOR(c));
 }
 
-// hsv2rgb(float h, float s, float v, uint32_t fg_bg) {
-inline Truecolor
-hsv2rgb(HSV hsv, uint32_t fg_bg)
+#define LOOP_2D(X, X0, X1, XI, Y, Y0, Y1, YI, CODE, ...)  \
+for (X = X0; X <= X1; X += XI){ for (Y = Y0; Y <= Y1; Y += YI){ CODE ;} __VA_ARGS__ ; }
+
+#define LEFT_HALF  "\u258C"
+#define RIGHT_HALF "\u2590"
+#define LOWER_HALF "\u2584"
+#define UPPER_HALF "\u2580"
+
+void exit_cleanup(int signr)
 {
-	float tmp = hsv[H] / 120.;
-
-	float whole = floor(tmp);
-	float frac = tmp - whole;
-
-	float a[3] = { 1. - frac, frac, 0. };
-
-	for (int i = 0; i < 3; i++) {
-		/* min(2x, 1) */
-		a[i] = ldexp(a[i], 1);
-		a[i] = fmin(a[i], 1.);
-
-		a[i] = hsv[V] * ((1. - hsv[S]) + hsv[S] * a[i]);
-	}
-
-	/* set flag */
-	Truecolor rgb = fg_bg << 24;
-
-	for (int i = 0; i < 3; i++) {
-		rgb |= (
-			(int)(a[i] * 255.f) & 0xFF) <<
-		       (8 * WRAP_MOD(whole + i, 3));
-	}
-	return rgb;
-}
-
-#define BLEND(A, B, C) ((A)-(C)*((A)-(B)))
-
-inline Truecolor
-blend_hsv(HSV a, HSV b, float c)
-{
-	HSV tmp;
-
-	for (int i = 0; i < 3; i++)
-		tmp[i] = BLEND(a[i], b[i], c);
-
-	Truecolor result;
-	result = hsv2rgb(tmp, 0);
-	return result;
+    SCREEN_RESTORE
+    exit(0);
 }
 
 int
 main(int argc, char *argv[])
 {
-	float hue, sat, val;
 
-	for (val = 0.; val < 1.; val += 0.1) {
-		for (float hue = 0.; hue < 360.; hue += 6.) {
-			HSV hsv = { hue, 1., val };
-			Truecolor c = hsv2rgb(hsv, 1);
-			truecolor_print(c);
-			printf(" ");
-		}
-		printf("\e[0m\n");
-	}
-	for (sat = 0.9; sat >= 0.; sat -= 0.1) {
-		for (hue = 0.; hue < 360.; hue += 6.) {
-			HSV hsv = { hue, sat, val };
-			Truecolor c = hsv2rgb(hsv, 1);
-			truecolor_print(c);
-			printf(" ");
-		}
-		printf("\e[0m\n");
-	}
+    signal(SIGINT, exit_cleanup);
 
-	putchar('\n');
-	puts("\e[0m");
+	float h=0, s=0, v=0, l=0, x=0;
 
-	uint32_t color = 0x00F3F201;
-	truecolor_print(color);
-	print("hello there");
+    char banner_color[32];
+    truecolor_str(banner_color , 0x01243770);
+    
+    
+    float dx = 1.f / 64.f;
+   
+    SCREEN_STORE
+        
+    while(1){
+        printf("\e[H");
+        printf("%s\e[K\e[1m  HSV\e[0m\n",banner_color);
+        LOOP_2D(v, 0.f, 1.f, 0.1f, h, 0.f, 360.f, 6.f,
+			    truecolor_print(fhsv2rgb_bg(h, x, x));
+			    truecolor_print(fhsv2rgb_fg(h, x, v));
+			    printf(LOWER_HALF),
+		        printf("\e[0m\e[K\n");
+	           )
+
+            printf("%s\e[K\e[1m  HSL\e[0m\n",banner_color);
+        LOOP_2D(l, 0., 1., 0.1f, h, 0., 360., 6.,
+			    truecolor_print(fhsl2rgb_bg(h, x, x));
+			    truecolor_print(fhsl2rgb_fg(h, x, l));
+			    printf(LOWER_HALF),
+		        printf("\e[0m\e[K\n");
+	           )
+        sleep_ms(16);
+        x += dx;
+        if ((x <= 0) || (x >= 1))
+            dx = -dx;
+    };
 
 	return 0;
 }

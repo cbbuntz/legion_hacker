@@ -1,3 +1,4 @@
+#include <time.h>
 /* using for testing */
 #define AUTO_FORMAT(X) _Generic((X)       , \
 uint8_t:          "%u"   ,\
@@ -18,4 +19,8 @@ default:          "(unknown type)"\
 #define WATCH(X) PRINT_LABEL(X);\
     printf(AUTO_FORMAT((X)), (X));\
     putchar('\n');
+
+void sleep_ms(int ms){
+    usleep(ms * 1000);
+}
 
