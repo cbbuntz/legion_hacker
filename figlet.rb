@@ -1,4 +1,4 @@
-font = {
+@font = {
     ' ': "",
     '!': " _ \n| |\n| |\n|_|\n(_)",
     '"': " _ _ \n( | )\n V V",
@@ -95,7 +95,7 @@ font = {
     '~': " /\\/|\n|/\\/"
 }
 
-font_big = {
+@font_big = {
     ' ': "",
     '!': " _ \n| |\n| |\n| |\n|_|\n(_)",
     '"': " _ _ \n( | )\n V V",
@@ -192,4 +192,52 @@ font_big = {
     '~': " /\\/|\n|/\\/"
 }
 
-"Test string".each_char {|c| puts font[c.to_sym] }
+require "./escape.rb"
+include EscSequence
+
+class String
+    def nonblank_length
+        begin
+            v_start = self =~ /(?<=\s)\S/
+            v_end = self =~ /\s*$/
+            v_end - v_start
+        rescue
+            0
+        end
+    end
+    def last_nonblank
+        self =~ /\s*$/
+    end
+end
+
+def figlet_char v
+    if v =~ / /
+       return @column += 5
+    end
+
+    a = @font_big[v.to_sym].split(/\n/)
+    
+    max_len = a.map{ |line| line.last_nonblank }.max
+    @column += max_len
+
+    cursor :line, 1
+    a.map.with_index do |line, i|
+        cursor :pos, @line + i, @column
+        print line
+    end
+end
+
+def figlet_test v
+    @line = 1
+    @column = 1
+    
+    screen :new
+    cursor :save
+    
+    v.each_char { |c| figlet_char c  }
+    
+    sleep 5
+    screen :restore
+end
+
+figlet_test 'test string'
