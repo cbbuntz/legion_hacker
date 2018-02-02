@@ -305,7 +305,7 @@ module EscSequence
     end   
     
     def console_kill
-        print "\r\e[K"
+        print "\e[K"
     end   
     
     def console_kill_line
