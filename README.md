@@ -19,3 +19,25 @@ Credit to [cool-retro-term](https://github.com/Swordfish90/cool-retro-term) for 
 * A collection of pre-made widgets such as progress bars, menus, meters, gradients, column printing etc.
 
 * A C binary to do quick terminal colorization and gradients.
+
+## Get Started
+
+To become a legion_hacker, launch the `hack` executable:
+
+```
+$ ruby bin/hack
+```
+
+### Development
+
+To install development dependencies, use bundler:
+
+```
+$ bundle install
+```
+
+Linting and style check can be done using `rubocop` via `rake`
+
+```
+$ rake
+```
