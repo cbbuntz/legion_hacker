@@ -17,4 +17,7 @@ Style/FormatStringToken:
   EnforcedStyle: unannotated
 
 Metrics/LineLength:
-    Enabled: false
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
