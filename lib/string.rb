@@ -1,4 +1,5 @@
-require './escape.rb'
+
+require_relative 'escape.rb'
 
 class String
     private

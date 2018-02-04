@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 $LOAD_PATH << '.'
 require 'string.rb'
 include EscSequence
@@ -9,8 +11,8 @@ def color_example
     result_color = rgb256_fg(3, 1, 0)
     test_string = '* TEST STRING *'
     @buffer.each do |line|
-        break if line =~ /ex2/
-        next unless line =~ /^[^#]/
+        break if line.match?(/ex2/)
+        next unless line.match?(/^[^#]/)
         result = eval(line)
         print " #{code_color}#{line.chomp}"
         print "\n  #{result}\e[0m"

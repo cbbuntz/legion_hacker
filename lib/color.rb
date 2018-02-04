@@ -1,4 +1,6 @@
 #!/bin/ruby
+# frozen_string_literal: true
+
 include Math
 
 RGB = Struct.new(:r, :g, :b) do
