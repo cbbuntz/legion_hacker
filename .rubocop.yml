@@ -3,3 +3,21 @@ Layout/IndentationWidth:
   # Number of spaces for each indentation level.
   Width: 4
   IgnoredPatterns: []
+
+AllCops:
+  # Exclude:
+  #   - "somedir/**/*"
+  UseCache: false
+  DefaultFormatter: progress
+  DisplayStyleGuide: true
+  DisplayCopNames: true
+  TargetRubyVersion: 2.5
+
+Style/FormatStringToken:
+  EnforcedStyle: unannotated
+
+Metrics/LineLength:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false

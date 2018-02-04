@@ -1,3 +1,4 @@
+
 class Crawler
     attr_accessor :line, :line2, :visible
     @@hsv1 = [120, 1, 0.5]
@@ -79,7 +80,7 @@ class Crawler
     end
 end
 
-@matrix_gibberish = File.read('./text/matrix_gibberish').chars
+@matrix_gibberish = File.read('data/text/matrix_gibberish').chars
 
 def matrix_gibberish(n)
     Array.new(n) { |_i| @matrix_gibberish.sample } * ''

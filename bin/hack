@@ -1,8 +1,8 @@
 #!/usr/bin/ruby
 
-require './string.rb'
-require './color.rb'
-require './matrix.rb'
+require_relative '../lib/string'
+require_relative '../lib/color'
+require_relative '../lib/matrix'
 
 termcap = `stty -a <"$(tty)"`
 
@@ -11,7 +11,7 @@ $columns = termcap.gsub(/.*?(columns)\s*(\d+).*/m, '\\2').to_i
 $center_line = $lines / 2
 $center_column = $columns / 2
 
-@alienlang = File.read('./text/chars').gsub(/\s/m, '').chars
+@alienlang = File.read('data/text/chars').gsub(/\s/m, '').chars
 
 @red = "\e[38;5;196;48;5;16m"
 @redbg = "\e[38;5;231;48;5;196m"
@@ -91,9 +91,9 @@ end
 system('clear')
 print "\e[38;5;46m"
 #  banner =  `figlet -f big -t "LEGION  HACKER"` + "\n\n\n\n\n"
-banner = `cat ./text/banner` + "\n\n\n\n\n"
+banner = `cat data/text/banner` + "\n\n\n\n\n"
 #  cia_banner =  `figlet -f big -t "  C I A  "` + "\n\n\n\n\n"
-cia_banner = `cat ./text/CIA` + "\n\n\n\n\n"
+cia_banner = `cat data/text/CIA` + "\n\n\n\n\n"
 
 print banner
 

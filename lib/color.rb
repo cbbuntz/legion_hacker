@@ -1,4 +1,5 @@
 #!/bin/ruby
+
 include Math
 
 RGB = Struct.new(:r, :g, :b) do

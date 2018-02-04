@@ -1,3 +1,4 @@
+
 class Array
     def homogeneous?
         inject { |y, v| y && v.is_a?(self[0].class) }
