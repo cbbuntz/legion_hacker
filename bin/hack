@@ -19,17 +19,18 @@ $center_column = $columns / 2
 @alienlang = File.read('../data/text/chars').gsub(/\s/m, '').chars
 
 @red = color :rgb256_fg, '500'
-@redbg = "\e[38;5;231;48;5;196m"
+@redbg = color :rgb256, '555', '500'
 @green = color :rgb256, '050'
 @normal = (style_on :reset)
 
-def progress(title, tail = '', color = "\e[38;5;231;48;5;34m")
+def progress(title, tail = '', on = color(:rgb256, '555', '030'))
     puts
-    on = "\e[1m" << color
-    off = "\e[1;38;5;231;48;5;16m"
+    on.set_bold
+    off = color(:rgb256, '555', '000')
     n = 50
     str = title.center(n)
-    print "\r[#{off}#{str}]\e[2G"
+    print "\r#{off}[#{str}]"
+    cursor :col, 2
     print on
     str.chars.each do |c|
         print c
