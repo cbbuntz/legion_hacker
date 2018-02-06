@@ -1,3 +1,5 @@
+root_path = __dir__.sub(/(?<=\/)\w+$/, '')
+
 # Methods to ensure all types are the same
 class Array
     def homogeneous?

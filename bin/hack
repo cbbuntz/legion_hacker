@@ -1,13 +1,12 @@
 #!/usr/bin/ruby
-
-root_path = __dir__.sub(/(?<=\/)\w+$/, '')
-
+require 'figlet'
 require_relative '../lib/string'
 require_relative '../lib/color'
 require_relative '../lib/matrix'
 include EscSequence
 
-require 'figlet'
+root_path = __dir__.sub(/(?<=\/)\w+$/, '')
+
 font = Figlet::Font.new(root_path + 'data/fonts/big.flf')
 figlet = Figlet::Typesetter.new(font)
 
@@ -88,7 +87,9 @@ end
 
 screen :new
 
+
 print @green
+
 banner = figlet['LEGION  HACKER'] + "\n" * 5
 cia_banner = figlet['   C   I   A'] + "\n" * 5
 
@@ -115,7 +116,7 @@ progress 'Hacking ' + target, "\e[1;05m#{@red}#{' RESTRICTED ACCESS ONLY '.cente
 type 'CRACK PASSWORD && OVERRIDE ALL SECURITY', 14, 0.08, 0.2
 sleep 0.25
 
-alien_language 20
+alien_language(20)
 
 stra = (1..$lines).map { |i| EscSequence.line(i) << EscSequence.kill }
 cia_banner.split(/\n/).each.with_index { |s, i| stra[i] << s }
