@@ -8,6 +8,7 @@ GEM
       ast (~> 2.3)
     powerpack (0.1.1)
     rainbow (3.0.0)
+    rake (12.3.0)
     rubocop (0.52.1)
       parallel (~> 1.10)
       parser (>= 2.4.0.2, < 3.0)
@@ -23,6 +24,7 @@ PLATFORMS
 
 DEPENDENCIES
   figlet!
+  rake!
   rubocop!
 
 BUNDLED WITH

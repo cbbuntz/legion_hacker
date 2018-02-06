@@ -66,7 +66,6 @@ def ascii_gibberish(n)
     Array.new(n) { |_i| @ascii_gibberish.sample } * ''
 end
 
-
 @matrix_gibberish = File.read(root_path + 'data/text/matrix_gibberish').chars
 
 def matrix_gibberish(n)
@@ -102,14 +101,13 @@ target = 'CIA'
 type "HACK #{target.upcase}"
 
 clear_lines
-
-#  print "\e[10;0H"
-puts "💀💀💀💀💀#{@red}#{'WARNING'.blink.bold}\e[0m 💀💀💀💀💀".at_line(9)
+cursor :line, 10
+puts "💀💀💀💀💀#{@red}#{'WARNING'.blink.bold}\e[0m 💀💀💀💀💀"
 puts "#{@red} YOU ARE ABOUT TO HACK #{target}.#{@green}"
-print_kill "  Do you wish to continue?"
+print_kill '  Do you wish to continue?'
 
-cursor :line, 14
 sleep 1.2
+type 'CONTINUE', 14
 
 clear_lines
 progress 'Hacking ' + target, "\e[1;05m#{@red}#{' RESTRICTED ACCESS ONLY '.center(50, '*')}\e[0m"
@@ -192,10 +190,10 @@ press_any_key = '  PRESS ANY KEY TO CONTINUE  '.center($columns, '#')
 linestart = $center_line - 2
 
 (0..255).each do |i|
-    print color :truecolor_fg, 0,i,0
+    print color :truecolor_fg, 0, i, 0
     print hashes.at_line(linestart)
     print hashes.at_line(linestart + 1)
-    print str.blink.at_pos(linestart + 1,($columns - str.length) / 2 + 1)
+    print str.blink.at_pos(linestart + 1, ($columns - str.length) / 2 + 1)
     print press_any_key.at_line(linestart + 2)
     print hashes.at_line(linestart + 3)
     print "\n\r"

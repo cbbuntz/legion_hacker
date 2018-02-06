@@ -184,7 +184,7 @@ module EscSequence
     def self.truecolor_fg(*v)
         @color_format[:truecolor_fg] % EscSequence.process_truecolor(*v)
     end
-    
+
     def self.truecolor_bg(*v)
         @color_format[:truecolor_bg] % EscSequence.process_truecolor(*v)
     end
@@ -311,9 +311,9 @@ module EscSequence
         SCROLL_N_DOWN: "\e[%uS",
         SCROLL_N_DN:   "\e[%uS"
     }.freeze
-    
+
     def self.screen(cmd, *v)
-        if /scroll_n/i =~ cmd
+        if /scroll_n/i.match?(cmd)
             EscSequence::SCREEN[cmd.to_sym] % v[0]
         else
             EscSequence::SCREEN[cmd.to_sym]
@@ -373,7 +373,7 @@ module EscSequence
         print EscSequence.cursor(*v)
     end
 
-    def cursor_get_pos(*v)
+    def cursor_get_pos(*_v)
         print "\e[6n"
         gets pos
     end
