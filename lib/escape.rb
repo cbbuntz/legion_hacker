@@ -431,4 +431,10 @@ module EscSequence
     def set_cursor_shape(v)
         print EscSequence.cursor_shape(v)
     end
+   
+    # replace all text to end of line
+    def print_kill(*v)
+        print "\e[K"
+        print v
+    end
 end
