@@ -1,12 +1,14 @@
 #!/usr/bin/ruby
 
+root_path = __dir__.sub(/(?<=\/)\w+$/, '')
+
 require_relative '../lib/string'
 require_relative '../lib/color'
 require_relative '../lib/matrix'
 include EscSequence
 
 require 'figlet'
-font = Figlet::Font.new('../data/fonts/big.flf')
+font = Figlet::Font.new(root_path + 'data/fonts/big.flf')
 figlet = Figlet::Typesetter.new(font)
 
 termcap = `stty -a <"$(tty)"`
@@ -16,7 +18,7 @@ $columns = termcap.gsub(/.*?(columns)\s*(\d+).*/m, '\\2').to_i
 $center_line = $lines / 2
 $center_column = $columns / 2
 
-@alienlang = File.read('../data/text/chars').gsub(/\s/m, '').chars
+@alienlang = File.read(root_path + 'data/text/chars').gsub(/\s/m, '').chars
 
 @red = color :rgb256_fg, '500'
 @redbg = color :rgb256, '555', '500'
@@ -62,6 +64,13 @@ end
 @ascii_gibberish = ('!'..'~').to_a << (0..10).to_a * 8
 def ascii_gibberish(n)
     Array.new(n) { |_i| @ascii_gibberish.sample } * ''
+end
+
+
+@matrix_gibberish = File.read(root_path + 'data/text/matrix_gibberish').chars
+
+def matrix_gibberish(n)
+    Array.new(n) { |_i| @matrix_gibberish.sample } * ''
 end
 
 def type(s, line = nil, sec = 0.06, wait = 0.9)
