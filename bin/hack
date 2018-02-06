@@ -3,12 +3,11 @@
 require_relative '../lib/string'
 require_relative '../lib/color'
 require_relative '../lib/matrix'
-require 'figlet'
+include EscSequence
 
+require 'figlet'
 font = Figlet::Font.new('../data/fonts/big.flf')
 figlet = Figlet::Typesetter.new(font)
-
-include EscSequence
 
 termcap = `stty -a <"$(tty)"`
 
@@ -22,11 +21,7 @@ $center_column = $columns / 2
 @red = color :rgb256_fg, '500'
 @redbg = "\e[38;5;231;48;5;196m"
 @green = color :rgb256, '050'
-#  @alien = "\e[38;5;155;48;5;16m"
 @normal = (style_on :reset)
-@blink = "\e[05m"
-@blinkoff = "\e[25m"
-@clear = "\e[2J"
 
 def progress(title, tail = '', color = "\e[38;5;231;48;5;34m")
     puts
@@ -141,11 +136,11 @@ progress 'Downloading records', 'Download complete.'
 type 'ANALYZE DATA && ENHANCE'
 clear_lines
 progress 'Analyzing data', '237 Visual Basic GUIs found.'
-#  sleep 0.25
+sleep 0.25
 cursor :up, 4
 progress 'Enhancing', '3,359,974 Visual Basic GUIs found.'
 
-#  sleep 0.25
+sleep 0.25
 type 'DECRYPT DATA'
 clear_lines
 
@@ -156,10 +151,11 @@ cursor :save
 
 181.times do |i|
     s = matrix_gibberish(32) << ' ' * 8
-    print "\e[u"
+    cursor :restore
     gradient [6 * i, 0.5, 1.0], [10 * i, 1.0, 1.0], s
     len = (decrypted.length * (i / 180.0)).round
-    print "\e[u\n\r\e[K"
+    cursor :restore
+    print "\n\r\e[K"
     print decrypted[0..len] << s[0] << "\e[7m \e[27m\n\r\e[K"
     sleep 0.05
 end
@@ -189,7 +185,7 @@ linestart = $center_line - 2
 (0..255).each do |i|
     print "\e[38;2;0;#{i};0m" << hashes.at_line(linestart)
     print hashes.at_line(linestart + 1)
-    print str.blink.at_pos((linestart + 1),(($columns - str.length) / 2 + 1))
+    print str.blink.at_pos(linestart + 1,($columns - str.length) / 2 + 1)
     print press_any_key.at_line(linestart + 2)
     print hashes.at_line(linestart + 3)
     print "\n\r"
