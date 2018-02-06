@@ -1,4 +1,3 @@
-
 $LOAD_PATH << '.'
 require_relative 'util'
 
@@ -59,12 +58,27 @@ module EscSequence
         ]
     end
 
+    #  better name for these methods? :set_style should be reserved for class
+    def style_on(*v)
+        styles = v.map { |i| EscSequence::STYLE[i.to_sym] }.transpose
+        "\e[" << styles[0].join(';') << 'm'
+    end
+
+    def style_off(*v)
+        styles = v.map { |i| EscSequence::STYLE[i.to_sym] }.transpose
+        "\e[" << styles[1].join(';') << 'm'
+    end
+
     @color_format = {
         ansi: "\e[%um",
 
         truecolor: ["\e[38;2;%u;%u;%um", "\e[48;2;%u;%u;%um"],
         truecolor_fg: "\e[38;2;%u;%u;%um",
         truecolor_bg: "\e[48;2;%u;%u;%um",
+
+        truecolour: ["\e[38;2;%u;%u;%um", "\e[48;2;%u;%u;%um"],
+        truecolour_fg: "\e[38;2;%u;%u;%um",
+        truecolour_bg: "\e[48;2;%u;%u;%um",
 
         rgb256: ["\e[38;5;%um", "\e[48;5;%um"],
         rgb256_fg: "\e[38;5;%um",
@@ -74,15 +88,30 @@ module EscSequence
         greyscale: ["\e[38;5;%um", "\e[48;5;%um"]
     }
 
+    #  Accepts string
     def self.process_rgb256(*v)
         if v.nil?
+            ''
         elsif v[0].is_a? Array
-            [
-                EscSequence.process_rgb256(*v[0]),
-                EscSequence.process_rgb256(*v[1])
-            ]
+            if v.length == 2
+                [EscSequence.process_rgb256(*v[0]), EscSequence.process_rgb256(*v[1])]
+            else
+                EscSequence.process_rgb256(*v[0])
+            end
+        elsif v.are_a? String
+            v.map { |i| EscSequence.process_rgb256(i.chars.map(&:to_i)) }
+        elsif v.are_a? Numeric
+            if v[0] > 5
+                if v.length == 2
+                    [EscSequence.process_rgb256(v[0].digits), EscSequence.process_rgb256(v[0].digits)]
+                else
+                    EscSequence.process_rgb256(v[0].digits)
+                end
+            else
+                16 + (v[0] * 36) + (v[1] * 6) + v[2]
+            end
         else
-            16 + (v[0] * 36) + (v[1] * 6) + v[2]
+            raise 'Argument error to EscSequence.process_rgb256'
         end
     end
 
@@ -130,6 +159,8 @@ module EscSequence
         if v[0].is_a? Array
             v.map { |x| x.map(&:to_i) }
 
+        elsif v.are_a? String
+            v.map { |x| EscSequence.process_truecolor x.to_i(16) }
         elsif v.are_a? Numeric
 
             if v.length == 3
@@ -153,7 +184,7 @@ module EscSequence
     def self.truecolor_fg(*v)
         @color_format[:truecolor_fg] % EscSequence.process_truecolor(*v)
     end
-
+    
     def self.truecolor_bg(*v)
         @color_format[:truecolor_bg] % EscSequence.process_truecolor(*v)
     end
@@ -222,6 +253,7 @@ module EscSequence
         EscSequence.grayscale_bg(v)
     end
 
+    #  truecolour alias not working?
     alias truecolour     truecolor
     alias truecolour_fg  truecolor_fg
     alias truecolour_bg  truecolor_bg
@@ -309,6 +341,10 @@ module EscSequence
 
     def self.pos(cmd, *v)
         @cursor_format[cmd.to_sym] % v.map(&:to_i)
+    end
+
+    def self.line(*v)
+        @cursor_format[:line] % v.map(&:to_i)
     end
 
     def self.cursor_pos(*v)

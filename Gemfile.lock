@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.0)
+    figlet (1.1.0)
     parallel (1.12.1)
     parser (2.4.0.2)
       ast (~> 2.3)
@@ -21,6 +22,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  figlet!
   rubocop!
 
 BUNDLED WITH

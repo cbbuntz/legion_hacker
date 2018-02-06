@@ -141,10 +141,12 @@ class String
     end
 
     def color(type, *v)
-        EscSequence.send(type, *v) << self
+        EscSequence.color(type, *v) << self
     end
+    alias colour color
 
     def set_color(type, *v)
-        prepend(EscSequence.send(type, *v))
+        prepend(EscSequence.send(color, type, *v))
     end
+    alias set_colour set_color
 end

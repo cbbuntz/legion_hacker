@@ -3,6 +3,12 @@
 require_relative '../lib/string'
 require_relative '../lib/color'
 require_relative '../lib/matrix'
+require 'figlet'
+
+font = Figlet::Font.new('../data/fonts/big.flf')
+figlet = Figlet::Typesetter.new(font)
+
+include EscSequence
 
 termcap = `stty -a <"$(tty)"`
 
@@ -11,29 +17,16 @@ $columns = termcap.gsub(/.*?(columns)\s*(\d+).*/m, '\\2').to_i
 $center_line = $lines / 2
 $center_column = $columns / 2
 
-@alienlang = File.read('data/text/chars').gsub(/\s/m, '').chars
+@alienlang = File.read('../data/text/chars').gsub(/\s/m, '').chars
 
-@red = "\e[38;5;196;48;5;16m"
+@red = color :rgb256_fg, '500'
 @redbg = "\e[38;5;231;48;5;196m"
-@green = "\e[38;5;46m"
-@greenbg = "\e[42m"
-@alien = "\e[38;5;155;48;5;16m"
-@normal = "\e[0m"
+@green = color :rgb256, '050'
+#  @alien = "\e[38;5;155;48;5;16m"
+@normal = (style_on :reset)
 @blink = "\e[05m"
 @blinkoff = "\e[25m"
 @clear = "\e[2J"
-
-def setpos(line, col)
-    "\e[#{line};#{col}H"
-end
-
-def set_col(col)
-    "\e[#{col}G"
-end
-
-def set_line(_col)
-    "\e[#{line};0H"
-end
 
 def progress(title, tail = '', color = "\e[38;5;231;48;5;34m")
     puts
@@ -88,21 +81,20 @@ def clear_lines
     print "\e[2A\r\e[K\e[1A\e[K\e[1A\e[K\e[1A\e[K"
 end
 
-system('clear')
+screen :new
+
 print "\e[38;5;46m"
-#  banner =  `figlet -f big -t "LEGION  HACKER"` + "\n\n\n\n\n"
-banner = `cat data/text/banner` + "\n\n\n\n\n"
-#  cia_banner =  `figlet -f big -t "  C I A  "` + "\n\n\n\n\n"
-cia_banner = `cat data/text/CIA` + "\n\n\n\n\n"
+banner = figlet['LEGION  HACKER'] + "\n" * 5
+cia_banner = figlet['   C   I   A'] + "\n" * 5
 
 print banner
 
-print "\e[10;0H"
+cursor :line, 10
 progress 'LOADING', 'READY'
 
 target = 'CIA'
 type "HACK #{target.upcase}"
-#
+
 print "\e[2A\r\e[K\e[1A\e[K\e[1A\e[K\e[1A\e[K\e[1A"
 
 #  print "\e[10;0H"
@@ -110,20 +102,18 @@ puts "💀💀💀💀💀\e[1;05m#{@red} WARNING \e[0m💀💀💀💀💀".at_
 puts "\e[31m YOU ARE ABOUT TO HACK #{target}.#{@green}"
 print "\e[K  Do you wish to continue?"
 
-print "\e[14;0H"
+cursor :line, 14
 sleep 1.2
 
 clear_lines
 progress 'Hacking ' + target, "\e[1;05m#{@red}#{' RESTRICTED ACCESS ONLY '.center(50, '*')}\e[0m"
 
-#  sleep 5
-
 type 'CRACK PASSWORD && OVERRIDE ALL SECURITY', 14, 0.08, 0.2
-#  sleep 0.25
+sleep 0.25
 
 alien_language 20
 
-stra = (1..$lines).map { |i| setpos(i, 0) << "\e[K\r" }
+stra = (1..$lines).map { |i| EscSequence.line(i) << EscSequence.kill }
 cia_banner.split(/\n/).each.with_index { |s, i| stra[i] << s }
 
 address = (0..3).map { |_i| rand(255) } * '.'
@@ -139,12 +129,12 @@ stra.shuffle.each do |s|
     sleep 0.035
 end
 
-print "\e[14;0H"
+cursor :line, 14
 type 'SCAN DATABASE && DOWNLOAD RECORDS'
 clear_lines
 progress 'Scanning database', '78651 records found.'
 
-print "\e[4A"
+cursor :up, 4
 #  clear_lines
 progress 'Downloading records', 'Download complete.'
 
@@ -152,7 +142,7 @@ type 'ANALYZE DATA && ENHANCE'
 clear_lines
 progress 'Analyzing data', '237 Visual Basic GUIs found.'
 #  sleep 0.25
-print "\e[4A"
+cursor :up, 4
 progress 'Enhancing', '3,359,974 Visual Basic GUIs found.'
 
 #  sleep 0.25
@@ -161,7 +151,9 @@ clear_lines
 
 decrypted = ' WE ARE THE ILLUMINATI '
 
-print "\e[10;0H\r\e[s"
+cursor :line, 10
+cursor :save
+
 181.times do |i|
     s = matrix_gibberish(32) << ' ' * 8
     print "\e[u"
@@ -172,8 +164,11 @@ print "\e[10;0H\r\e[s"
     sleep 0.05
 end
 
-print "\e[11;0H\r#{@red}#{decrypted}   "
-print "\e[14;0H"
+cursor :line, 11
+console_kill_line
+print decrypted.to_s.color(:rgb256_fg, '500')
+
+cursor :line, 14
 
 type 'UPLOAD VIRUS'
 clear_lines
@@ -185,20 +180,21 @@ progress '💀💀💀💀  INITIALIZING SELF-DESTRUCT  💀💀💀💀', 'Self
 
 matrix
 
-print @clear
+screen :reset
 hashes = '#' * $columns
 str = '       HACKING  COMPLETE     '
 press_any_key = '  PRESS ANY KEY TO CONTINUE  '.center($columns, '#')
 linestart = $center_line - 2
 
 (0..255).each do |i|
-    print "\e[#{linestart};0H"
-    print "\e[38;2;0;#{i};0m" << hashes
-    print "\e[#{linestart + 1};0H"
-    print "#{hashes}\e"
-    print "\e[#{linestart + 1};#{($columns - str.length) / 2 + 1}H#{@blink}#{str}#{@blinkoff}"
-    print "\e[#{linestart + 2};0H" << press_any_key
-    print "\e[#{linestart + 3};0H" << hashes
-    print "\r"
+    print "\e[38;2;0;#{i};0m" << hashes.at_line(linestart)
+    print hashes.at_line(linestart + 1)
+    print str.blink.at_pos((linestart + 1),(($columns - str.length) / 2 + 1))
+    print press_any_key.at_line(linestart + 2)
+    print hashes.at_line(linestart + 3)
+    print "\n\r"
     sleep 0.002
 end
+
+sleep 5
+screen :restore

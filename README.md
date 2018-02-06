@@ -30,8 +30,7 @@ $ ruby bin/hack
 
 ### Development
 
-To install development dependencies, use bundler:
-
+To install development dependencies:
 ```
 $ bundle install
 ```
@@ -40,4 +39,13 @@ Linting and style check can be done using `rubocop` via `rake`
 
 ```
 $ rake
+```
+
+### Troubleshooting
+
+If you get errors, ensure that you have the necessary dependencies
+```
+$ gem list --local | grep bundler || gem install bundler
+$ gem list --local | grep rake || gem install rake
+$ bundle install
 ```
