@@ -74,7 +74,8 @@ def type(s, line = nil, sec = 0.06, wait = 0.9)
 end
 
 def clear_lines
-    print "\e[2A\r\e[K\e[1A\e[K\e[1A\e[K\e[1A\e[K"
+    console_kill_lines 10, 13
+    cursor :line, 10
 end
 
 screen :new
@@ -91,7 +92,7 @@ progress 'LOADING', 'READY'
 target = 'CIA'
 type "HACK #{target.upcase}"
 
-print "\e[2A\r\e[K\e[1A\e[K\e[1A\e[K\e[1A\e[K\e[1A"
+clear_lines
 
 #  print "\e[10;0H"
 puts "💀💀💀💀💀#{@red}#{'WARNING'.blink.bold}\e[0m 💀💀💀💀💀".at_line(9)
@@ -131,7 +132,6 @@ clear_lines
 progress 'Scanning database', '78651 records found.'
 
 cursor :up, 4
-#  clear_lines
 progress 'Downloading records', 'Download complete.'
 
 type 'ANALYZE DATA && ENHANCE'
