@@ -79,7 +79,7 @@ end
 
 screen :new
 
-print "\e[38;5;46m"
+print @green
 banner = figlet['LEGION  HACKER'] + "\n" * 5
 cia_banner = figlet['   C   I   A'] + "\n" * 5
 
@@ -94,7 +94,7 @@ type "HACK #{target.upcase}"
 print "\e[2A\r\e[K\e[1A\e[K\e[1A\e[K\e[1A\e[K\e[1A"
 
 #  print "\e[10;0H"
-puts "💀💀💀💀💀\e[1;05m#{@red} WARNING \e[0m💀💀💀💀💀".at_line(9)
+puts "💀💀💀💀💀#{@red}#{'WARNING'.blink.bold}\e[0m 💀💀💀💀💀".at_line(9)
 puts "\e[31m YOU ARE ABOUT TO HACK #{target}.#{@green}"
 print "\e[K  Do you wish to continue?"
 
@@ -166,7 +166,6 @@ console_kill_line
 print decrypted.to_s.color(:rgb256_fg, '500')
 
 cursor :line, 14
-
 type 'UPLOAD VIRUS'
 clear_lines
 progress '💀💀💀💀 Uploading virus 💀💀💀💀', 'Virus installation successful.', @redbg
@@ -184,7 +183,8 @@ press_any_key = '  PRESS ANY KEY TO CONTINUE  '.center($columns, '#')
 linestart = $center_line - 2
 
 (0..255).each do |i|
-    print "\e[38;2;0;#{i};0m" << hashes.at_line(linestart)
+    print color :truecolor_fg, 0,i,0
+    print hashes.at_line(linestart)
     print hashes.at_line(linestart + 1)
     print str.blink.at_pos(linestart + 1,($columns - str.length) / 2 + 1)
     print press_any_key.at_line(linestart + 2)
