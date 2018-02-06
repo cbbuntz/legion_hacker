@@ -311,6 +311,7 @@ module EscSequence
         SCROLL_N_DOWN: "\e[%uS",
         SCROLL_N_DN:   "\e[%uS"
     }.freeze
+    
     def self.screen(cmd, *v)
         if /scroll_n/i =~ cmd
             EscSequence::SCREEN[cmd.to_sym] % v[0]
@@ -350,7 +351,7 @@ module EscSequence
         unbracketed:        "\e[?2004l",
         bracketed_paste:    "\e[?2004h",
         unbracketed_paste:  "\e[?2004l"
-    }
+    }.freeze
 
     def self.cursor(cmd, *v)
         @cursor_format[cmd.to_sym] % v.map(&:to_i)
@@ -372,7 +373,6 @@ module EscSequence
         print EscSequence.cursor(*v)
     end
 
-    
     def cursor_get_pos(*v)
         print "\e[6n"
         gets pos
