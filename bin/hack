@@ -95,8 +95,8 @@ print "\e[2A\r\e[K\e[1A\e[K\e[1A\e[K\e[1A\e[K\e[1A"
 
 #  print "\e[10;0H"
 puts "💀💀💀💀💀#{@red}#{'WARNING'.blink.bold}\e[0m 💀💀💀💀💀".at_line(9)
-puts "\e[31m YOU ARE ABOUT TO HACK #{target}.#{@green}"
-print "\e[K  Do you wish to continue?"
+puts "#{@red} YOU ARE ABOUT TO HACK #{target}.#{@green}"
+print_kill "  Do you wish to continue?"
 
 cursor :line, 14
 sleep 1.2
