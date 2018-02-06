@@ -278,17 +278,26 @@ module EscSequence
 
     SCREEN = {
         store:         "\e[?1049h",
-        new:           "\e[?1049h\e[2J\e[H",
+        new:           "\e[?1049h\ec",
         restore:       "\e[?1049l",
+        clear_end:     "\e[0J",
+        clear_up:      "\e[1J",
+        clear_down:    "\e[1J",
+        clear_dn:      "\e[1J",
         clear:         "\e[2J",
-        clear!:        "\e[2J\e[H",
-        reset:         "\e[2J\e[H",
+        xclear:        "\e[3J",
+        reset:         "\ec",
         scroll_up:     "\e[T",
         scroll_down:   "\e[S",
         scroll_dn:     "\e[S",
         scroll_n_up:  "\e[%uT",
         scroll_n_down: "\e[%uS",
         scroll_n_dn:   "\e[%uS",
+        kill:          "\e[K",
+        kill_begin:    "\e[1K",
+        kill_start:    "\e[1K",
+        kill_line:     "\e[2K",
+        kill_end:      "\e[0K",
         STORE:         "\e[?u049h",
         NEW:           "\e[?1049h\e[2J\e[H",
         RESTORE:       "\e[?1049l",
@@ -303,7 +312,7 @@ module EscSequence
         SCROLL_N_DN:   "\e[%uS"
     }.freeze
     def self.screen(cmd, *v)
-        if cmd.match?(/scroll_n/i)
+        if /scroll_n/i =~ cmd
             EscSequence::SCREEN[cmd.to_sym] % v[0]
         else
             EscSequence::SCREEN[cmd.to_sym]
@@ -315,24 +324,32 @@ module EscSequence
     end
 
     @cursor_format = {
-        pos:      "\e[%u;%uH",
-        line_col: "\e[%u;%uH",
-        line:     "\e[%uH",
-        col:      "\e[%uG",
-        up:       "\e[%uA",
-        '^':      "\e[%uA",
-        down:     "\e[%uB",
-        'v':      "\e[%uB",
-        right:    "\e[%uC",
-        '>':      "\e[%uC",
-        left:     "\e[%uD",
-        '<':      "\e[%uD",
-        store:    "\e[s",
-        save:     "\e[s",
-        restore:  "\e[u",
-        home:     "\e[H",
-        cr:       "\r",
-        CR:       "\r"
+        pos:                "\e[%u;%uH",
+        line_col:           "\e[%u;%uH",
+        line:               "\e[%uH",
+        col:                "\e[%uG",
+        up:                 "\e[%uA",
+        '^':                "\e[%uA",
+        down:               "\e[%uB",
+        'v':                "\e[%uB",
+        right:              "\e[%uC",
+        '>':                "\e[%uC",
+        left:               "\e[%uD",
+        '<':                "\e[%uD",
+        store:              "\e[s",
+        save:               "\e[s",
+        restore:            "\e[u",
+        home:               "\e[H",
+        cr:                 "\r",
+        CR:                 "\r",
+        hide:               "\e[?25l",
+        conceal:            "\e[?25l",
+        unhide:             "\e[?25h",
+        show:               "\e[?25h",
+        bracketed:          "\e[?2004h",
+        unbracketed:        "\e[?2004l",
+        bracketed_paste:    "\e[?2004h",
+        unbracketed_paste:  "\e[?2004l"
     }
 
     def self.cursor(cmd, *v)
@@ -355,8 +372,10 @@ module EscSequence
         print EscSequence.cursor(*v)
     end
 
-    def cursor_pos(*v)
-        print EscSequence.cursor_pos(*v)
+    
+    def cursor_get_pos(*v)
+        print "\e[6n"
+        gets pos
     end
 
     def self.up(v = 1)
