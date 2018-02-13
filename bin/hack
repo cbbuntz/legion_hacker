@@ -11,10 +11,10 @@ require 'figlet'
 font = Figlet::Font.new(root_path + 'data/fonts/big.flf')
 figlet = Figlet::Typesetter.new(font)
 
-termcap = `stty -a <"$(tty)"`
+$termcap = `stty -a <"$(tty)"`
 
-$lines = termcap.gsub(/.*?(rows)\s*(\d+).*/m, '\\2').to_i
-$columns = termcap.gsub(/.*?(columns)\s*(\d+).*/m, '\\2').to_i
+$lines = $termcap.gsub(/.*?(rows)\s*(\d+).*/m, '\\2').to_i
+$columns = $termcap.gsub(/.*?(columns)\s*(\d+).*/m, '\\2').to_i
 $center_line = $lines / 2
 $center_column = $columns / 2
 
@@ -43,7 +43,8 @@ end
 
 def alien_language(n = 100)
     (0..n).each do |line|
-        s = @alienlang.shuffle[0, $columns] * ''
+        s = @alienlang.shuffle.join
+        puts "s = #{s}"
         pos = rand($lines - 8)
         print "\e[#{pos};1H"
         bright = (($lines - pos) / $lines.to_f)
@@ -87,6 +88,8 @@ def clear_lines
 end
 
 screen :new
+
+alien_language 20
 
 print @green
 banner = figlet['LEGION  HACKER'] + "\n" * 5

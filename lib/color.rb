@@ -74,6 +74,7 @@ def hsv2rgb(h, s, v)
     a = [1 - frac, frac, 0].rotate(-i)
     a = a.map { |x| [x * 2, 1].min }
     a = a.map { |x| v * ((1 - s) + x * s) }
+    puts "a = #{a}"
     a.map { |x| (x * 255).round }
 end
 
